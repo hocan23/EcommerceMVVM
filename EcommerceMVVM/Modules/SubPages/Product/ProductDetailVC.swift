@@ -18,7 +18,7 @@ final class ProductDetailVC: UIViewController, RoutingConfiguration {
     private let topStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .vertical
-        stackView.spacing = 12
+        stackView.spacing = 30
         stackView.alignment = .center
         return stackView
     }()
@@ -76,9 +76,9 @@ final class ProductDetailVC: UIViewController, RoutingConfiguration {
         // Constraints
 
         NSLayoutConstraint.activate([
-            topStackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            topStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            topStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+            topStackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            topStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
+            topStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10)
         ])
         productImageView.setSize(height: 200)
 

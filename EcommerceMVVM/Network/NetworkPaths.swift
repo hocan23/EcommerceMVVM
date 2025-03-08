@@ -7,4 +7,6 @@
 
 enum NetworkPaths: String {
     case products = "/products"
+    case horizontalProducts = "/products?limit=5"
+    
 }
