@@ -27,6 +27,7 @@ class CollectionView<T, Cell: UICollectionViewCell>: UIView, UICollectionViewDel
         cellClass: Cell.Type,
         cellIdentifier: String = Cell.identifier,
         itemSize: CGSize,
+        scrollDirection: UICollectionView.ScrollDirection = .vertical,
         configureCell: @escaping (Cell, T) -> Void
     ) {
         self.cellIdentifier = cellIdentifier
@@ -34,7 +35,7 @@ class CollectionView<T, Cell: UICollectionViewCell>: UIView, UICollectionViewDel
         self.itemSize = itemSize
         
         // Configure layout
-        layout.scrollDirection = .vertical
+        layout.scrollDirection = scrollDirection
         layout.minimumLineSpacing = 16
         layout.minimumInteritemSpacing = 16
         layout.sectionInset = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
