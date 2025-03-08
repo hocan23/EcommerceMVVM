@@ -1,13 +1,14 @@
 //
-//  CollectionView.swift
-//  ECommerce
+//  HorizontalCollectionView.swift
+//  EcommerceMVVM
 //
 //  Created by hasancan on 8.03.2025.
 //
 
+
 import UIKit
 
-class CollectionView<T, Cell: UICollectionViewCell>: UIView, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+class HorizontalCollectionView<T, Cell: UICollectionViewCell>: UIView, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     // MARK: - Private Properties
     private var items: [T] = []
@@ -18,8 +19,17 @@ class CollectionView<T, Cell: UICollectionViewCell>: UIView, UICollectionViewDel
     // MARK: - Public Properties And Closures
     var willDisplayCell: ((Cell, IndexPath) -> Void)?
     var didSelectItem: ((T) -> Void)?
-    
+    var scrollDirection: UICollectionView.ScrollDirection = .vertical
     private let collectionView: UICollectionView
+    
+    private let pageControl: UIPageControl = {
+         let pc = UIPageControl()
+         pc.numberOfPages = 5  // 5 nokta olacak
+         pc.currentPage = 0
+         pc.currentPageIndicatorTintColor = .black
+         pc.pageIndicatorTintColor = .lightGray
+         return pc
+     }()
     
     // MARK: - Initialization
     init(
@@ -27,13 +37,12 @@ class CollectionView<T, Cell: UICollectionViewCell>: UIView, UICollectionViewDel
         cellClass: Cell.Type,
         cellIdentifier: String = Cell.identifier,
         itemSize: CGSize,
-        scrollDirection: UICollectionView.ScrollDirection = .vertical,
         configureCell: @escaping (Cell, T) -> Void
     ) {
         self.cellIdentifier = cellIdentifier
         self.configureCell = configureCell
         self.itemSize = itemSize
-        
+        self.scrollDirection = .horizontal
         // Configure layout
         layout.scrollDirection = scrollDirection
         layout.minimumLineSpacing = 16
@@ -61,6 +70,15 @@ class CollectionView<T, Cell: UICollectionViewCell>: UIView, UICollectionViewDel
     private func setupUI() {
         addSubview(collectionView)
         collectionView.pinToSuperviewEdges()
+        addSubview(pageControl)
+        collectionView.showsHorizontalScrollIndicator = false
+        pageControl.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            pageControl.leadingAnchor.constraint(equalTo: leadingAnchor),
+            pageControl.trailingAnchor.constraint(equalTo: trailingAnchor),
+            pageControl.topAnchor.constraint(equalTo: collectionView.bottomAnchor, constant: -16) // Alt kenara 16 pt boşluk bırak
+        ])
+        
     }
     
     // MARK: - Public Methods
@@ -100,5 +118,9 @@ class CollectionView<T, Cell: UICollectionViewCell>: UIView, UICollectionViewDel
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         didSelectItem?(items[indexPath.item])
+    }
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let pageIndex = round(scrollView.contentOffset.x / scrollView.frame.width)
+        pageControl.currentPage = Int(pageIndex)
     }
 }

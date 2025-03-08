@@ -14,21 +14,22 @@ final class ProductDetailVC: UIViewController, RoutingConfiguration {
     private let viewModel = ProductDetailVM()
     
     // MARK: - UI Components
+    
+    private let topStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.spacing = 30
+        stackView.alignment = .center
+        return stackView
+    }()
+    
     private let productImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
-        imageView.backgroundColor = .lightGray
         return imageView
     }()
 
-    private let favoriteButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(systemName: "star"), for: .normal)
-        button.tintColor = .lightGray
-        return button
-    }()
-
-    private let nameLabel: UILabel = {
+    private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 18)
         label.textColor = .black
@@ -51,21 +52,10 @@ final class ProductDetailVC: UIViewController, RoutingConfiguration {
         return label
     }()
 
-    private let addToCartButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Add to Cart", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = AppColors.primaryColor
-        button.layer.cornerRadius = 4
-        button.titleLabel?.font = AppFonts.boldLarge
-        return button
-    }()
-
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
         setupUI()
-        addToCartButton.addTarget(self, action: #selector(addToCartTapped), for: .touchUpInside)
     }
     
     func configure(with route: RoutingEnum) {
@@ -76,49 +66,33 @@ final class ProductDetailVC: UIViewController, RoutingConfiguration {
     }
 
     private func setupUI() {
-        view.addSubview(productImageView)
-        view.addSubview(favoriteButton)
-        view.addSubview(nameLabel)
-        view.addSubview(descriptionLabel)
-        view.addSubview(priceLabel)
-        view.addSubview(addToCartButton)
-
-        // Constraints
-        productImageView.pinToTop(of: view, offset: 16)
-        productImageView.pinToLeading(of: view, offset: 16)
-        productImageView.pinToTrailing(of: view, offset: -16)
         
+        topStackView.addArrangedSubview(productImageView)
+        topStackView.addArrangedSubview(titleLabel)
+        topStackView.addArrangedSubview(descriptionLabel)
+        topStackView.addArrangedSubview(priceLabel)
+        topStackView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(topStackView)
+        // Constraints
+
+        NSLayoutConstraint.activate([
+            topStackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            topStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
+            topStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10)
+        ])
         productImageView.setSize(height: 200)
 
-        favoriteButton.pinToTop(of: productImageView, offset: 8)
-        favoriteButton.pinToTrailing(of: productImageView, offset: -8)
-        favoriteButton.setSize(width: 24, height: 24)
 
-        nameLabel.pinTopToBottom(of: productImageView, offset: 16)
-        nameLabel.pinToLeading(of: view, offset: 16)
-        nameLabel.pinToTrailing(of: view, offset: 16)
 
-        descriptionLabel.pinTopToBottom(of: nameLabel, offset: 8)
-        descriptionLabel.pinToLeading(of: view, offset: 16)
-        descriptionLabel.pinToTrailing(of: view, offset: -16)
-
-        priceLabel.pinToBottom(of: view, offset: -16)
-        priceLabel.pinToLeading(of: view, offset: 16)
-
-        addToCartButton.pinToBottom(of: view, offset: -16)
-        addToCartButton.pinToTrailing(of: view, offset: -16)
-        addToCartButton.setSize(width: 180, height: 44)
     }
 
-    // MARK: - Actions
-
-    @objc private func addToCartTapped() {
-        guard let product = viewModel.product.value else { return }
-    }
 }
 
 extension ProductDetailVC {
     func displayProductDetails(product: Product) {
-
+        self.descriptionLabel.text = product.description
+        self.titleLabel.text = product.title
+        self.priceLabel.text = "$\(product.price ?? 0)"
+        productImageView.kf.setImage(with: URL(string: product.image ?? ""), placeholder: UIImage(named: "placeholder"))
     }
 }

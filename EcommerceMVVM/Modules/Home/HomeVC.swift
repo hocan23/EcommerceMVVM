@@ -13,6 +13,7 @@ final class HomeVC: BaseVC {
     private let viewModel = HomeVM()
     
     private var collectionView: CollectionView<Product, ProductCell>?
+    private var horizontalCollectionView: HorizontalCollectionView<Product, HorizontalProductCell>?
     
     var errorView: ErrorView = ErrorView()
     
@@ -23,7 +24,7 @@ final class HomeVC: BaseVC {
     }()
     
     private var products: [Product] = []
-    private var filteredProducts: [Product] = []
+    private var horizontalProducts: [Product] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -57,11 +58,18 @@ final class HomeVC: BaseVC {
         errorView.centerX(to: view)
         errorView.centerY(to: view)
         
+        horizontalCollectionView = HorizontalCollectionView<Product, HorizontalProductCell>(
+            cellClass: HorizontalProductCell.self,
+            itemSize: CGSize(width: (view.frame.width - 48), height: 250),
+            configureCell: { cell, product in
+                cell.configure(with: product)
+            }
+        )
+        
         collectionView = CollectionView<Product, ProductCell>(
             cellClass: ProductCell.self,
-            itemSize: CGSize(width: (view.frame.width - 48) / 2, height: 300),
+            itemSize: CGSize(width: (view.frame.width - 48) / 2, height: 350),
             configureCell: { cell, product in
-                cell.delegate = self
                 cell.configure(with: product)
             }
         )
@@ -70,17 +78,35 @@ final class HomeVC: BaseVC {
             Router.navigate(to: .productDetail(product: product), from: self?.navigationController)
         }
         
+        horizontalCollectionView?.didSelectItem = { [weak self] product in
+            Router.navigate(to: .productDetail(product: product), from: self?.navigationController)
+        }
+        
+        if let horizontalCollectionView = horizontalCollectionView {
+            horizontalCollectionView.translatesAutoresizingMaskIntoConstraints = false
+            view.addSubview(horizontalCollectionView)
+            NSLayoutConstraint.activate([
+                horizontalCollectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+                horizontalCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                horizontalCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                horizontalCollectionView.heightAnchor.constraint(equalToConstant: 300)
+            ])
+
+        }
+        
         if let collectionView = collectionView {
             collectionView.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview(collectionView)
             NSLayoutConstraint.activate([
-                collectionView.topAnchor.constraint(equalTo: view.topAnchor),
+                collectionView.topAnchor.constraint(equalTo: horizontalCollectionView!.bottomAnchor, constant: 15),
                 collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
                 collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
                 collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
             ])
 
         }
+        
+
     }
     
     @objc func pullToRefresh() {
@@ -111,7 +137,22 @@ private extension HomeVC {
     }
     
     func bindProducts() {
-        viewModel.filteredProducts
+        viewModel.horizontalProducts
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] products in
+                guard let self else { return }
+                if let products = products {
+                    horizontalCollectionView?.isHidden = false
+                    errorView.isHidden = true
+                    horizontalCollectionView?.updateItems(products)
+                } else {
+                    horizontalCollectionView?.isHidden = false
+                    errorView.isHidden = false
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        viewModel.products
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] products in
                 guard let self else { return }
@@ -128,16 +169,4 @@ private extension HomeVC {
         
         bindLoadingStatus(to: viewModel.loadingStatus)
     }
-}
-
-extension HomeVC: ProductCellDelegate {
-    func didTapFavoriteButton(in cell: ProductCell) {
-        print( "Did tap favorite button in cell.")
-    }
-    
-    func didTapAddToCartButton(in cell: ProductCell) {
-        print( "Did tap favorite button in cell.")
-    }
-    
-    
 }

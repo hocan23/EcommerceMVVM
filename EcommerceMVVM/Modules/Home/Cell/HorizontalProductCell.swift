@@ -1,7 +1,14 @@
+//
+//  HorizontalProductCell.swift
+//  EcommerceMVVM
+//
+//  Created by Linktera Bilgi Teknolojileri on 8.03.2025.
+//
+
 import UIKit
 import Kingfisher
 
-class ProductCell: UICollectionViewCell {
+class HorizontalProductCell: UICollectionViewCell {
     let appFont = UIFont(name: "Montserrat", size: 14)
     
     // MARK: - UI Components
@@ -36,7 +43,7 @@ class ProductCell: UICollectionViewCell {
     
     private let topStackView: UIStackView = {
         let stackView = UIStackView()
-        stackView.axis = .vertical
+        stackView.axis = .horizontal
         stackView.spacing = 12
         stackView.alignment = .fill
         return stackView
@@ -78,6 +85,7 @@ class ProductCell: UICollectionViewCell {
         contentView.addSubview(topStackView)
         topStackView.pinToSuperviewEdges(insets: UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8))
         topStackView.addArrangedSubview(productImageView)
+        productImageView.setSize(width: 100, height: 200)
         topStackView.addArrangedSubview(specStackView)
         
 
