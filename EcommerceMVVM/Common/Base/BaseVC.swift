@@ -41,7 +41,7 @@ class BaseVC: UIViewController, LoadingShowable {
         let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
         
-        present(alert, animated: false) { [weak self] in
+        present(alert, animated: false) {  
             alert.view.transform = CGAffineTransform(scaleX: 1.3, y: 1.3)
             alert.view.alpha = 0.0
             

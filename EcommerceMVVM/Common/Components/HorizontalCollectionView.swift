@@ -24,7 +24,7 @@ class HorizontalCollectionView<T, Cell: UICollectionViewCell>: UIView, UICollect
     
     private let pageControl: UIPageControl = {
          let pc = UIPageControl()
-         pc.numberOfPages = 5  // 5 nokta olacak
+         pc.numberOfPages = 5  
          pc.currentPage = 0
          pc.currentPageIndicatorTintColor = .black
          pc.pageIndicatorTintColor = .lightGray
