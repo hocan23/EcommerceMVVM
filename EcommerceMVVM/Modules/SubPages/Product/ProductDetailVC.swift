@@ -32,7 +32,6 @@ final class ProductDetailVC: UIViewController, RoutingConfiguration {
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 18)
-        label.textColor = .black
         label.numberOfLines = 2
         return label
     }()
@@ -44,11 +43,16 @@ final class ProductDetailVC: UIViewController, RoutingConfiguration {
         label.numberOfLines = 0
         return label
     }()
+    
+    private let ratingView: RatingStarsView = {
+        let ratingView = RatingStarsView()
+        ratingView.frame = CGRect(x: 50, y: 100, width: 150, height: 30)
+        return ratingView
+    }()
 
     private let priceLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 16)
-        label.textColor = .blue
         return label
     }()
 
@@ -66,7 +70,7 @@ final class ProductDetailVC: UIViewController, RoutingConfiguration {
     }
 
     private func setupUI() {
-        
+        topStackView.addArrangedSubview(ratingView)
         topStackView.addArrangedSubview(productImageView)
         topStackView.addArrangedSubview(titleLabel)
         topStackView.addArrangedSubview(descriptionLabel)
@@ -90,6 +94,7 @@ final class ProductDetailVC: UIViewController, RoutingConfiguration {
 
 extension ProductDetailVC {
     func displayProductDetails(product: Product) {
+        self.ratingView.rating = product.rating?.rate ?? 0
         self.descriptionLabel.text = product.description
         self.titleLabel.text = product.title
         self.priceLabel.text = "$\(product.price ?? 0)"

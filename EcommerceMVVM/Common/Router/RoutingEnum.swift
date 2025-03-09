@@ -11,7 +11,5 @@ protocol RoutingConfiguration {
 
 enum RoutingEnum {
     case home
-    case favorite
-    case settings
     case productDetail(product: Product)
 }
